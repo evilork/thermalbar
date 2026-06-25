@@ -1,8 +1,12 @@
 <div align="center">
 
+<img src="banner.png" alt="ThermalBar - macOS menu bar temperature and performance monitor for Apple Silicon Macs" width="100%">
+
 # 🌡️ ThermalBar
 
-### Live CPU & GPU temperature in your macOS menu bar - color-coded, native, lightweight.
+### macOS menu bar CPU & GPU temperature monitor - native, color-coded, lightweight, free.
+
+**A free Mac temperature monitor that lives in your menu bar.** Live CPU temperature, GPU temperature, RAM usage, and power draw - color-coded, no `sudo`, no Electron. Built for Apple Silicon (M1, M2, M3, M4, M4 Max, M5).
 
 [![Platform](https://img.shields.io/badge/platform-macOS%2013%2B-blue)](https://www.apple.com/macos/)
 [![Apple Silicon](https://img.shields.io/badge/Apple%20Silicon-M1--M5-black?logo=apple)](https://support.apple.com/en-us/116943)
@@ -16,19 +20,16 @@
 
 ## Why ThermalBar?
 
-Apple hides chip temperature behind private APIs. Most monitors are heavy Electron apps or need `sudo` every launch. ThermalBar is a **tiny native Swift app** that reads sensors directly and shows them as **color-coded numbers** in your menu bar - nothing else running, no dock icon, no bloat.
+Apple hides chip temperature behind private APIs. Most Mac temperature monitors are heavy Electron apps or need `sudo` every launch, and a full suite like iStat Menus costs money. ThermalBar is a **tiny native Swift app** - a free, lightweight, menu-bar Mac CPU/GPU temperature monitor that reads sensors directly and shows them as **color-coded numbers** in your menu bar - nothing else running, no dock icon, no bloat.
 
 - 🟢 **Color-coded at a glance** - green when cool, orange when warm, red when hot, dark red when critical. Each value colored independently.
-- 🌡️ **CPU temp** read natively via IOKit - works with zero dependencies.
-- 🎮 **GPU temp + power draw** via an optional lightweight helper.
+- 🌡️ **CPU temperature** read natively via IOKit - works with zero dependencies.
+- 🎮 **GPU temperature + power draw (W)** via an optional lightweight helper.
+- 🧠 **RAM usage (%)** - live memory pressure right in the menu bar.
 - 🪶 **Featherweight** - pure Swift, no Electron, no background bloat, no dock icon.
 - 🔧 **Fully configurable** - toggle any metric, set your own color thresholds.
 - 🔐 **No sudo, ever** - reads sensors through a private API without root.
 - 🚀 **Auto-starts on login**, stays out of your way.
-
-<div align="center">
-<img src="banner.png" alt="ThermalBar menu bar preview" width="600">
-</div>
 
 ## Install
 
@@ -59,6 +60,7 @@ Click the menu bar item to toggle metrics on/off, or edit `~/.config/thermalbar/
   "cpuTemp": { "enabled": true, "thresholds": { "normal": 60, "warn": 75, "high": 90 } },
   "gpuTemp": { "enabled": true, "thresholds": { "normal": 60, "warn": 75, "high": 90 } },
   "power":   { "enabled": true, "thresholds": { "normal": 30, "warn": 55, "high": 80 } },
+  "ram":     { "enabled": true, "thresholds": { "normal": 70, "warn": 85, "high": 95 } },
   "intervalSeconds": 3,
   "showLabels": true
 }
@@ -67,9 +69,9 @@ Click the menu bar item to toggle metrics on/off, or edit `~/.config/thermalbar/
 | Field | What it does |
 |-------|--------------|
 | `enabled` | show this metric in the bar |
-| `thresholds.normal / warn / high` | color cutoffs (°C, or W for power) |
+| `thresholds.normal / warn / high` | color cutoffs (°C for temps, W for power, % for RAM) |
 | `intervalSeconds` | how often to refresh |
-| `showLabels` | prefix `C` / `G` before temperatures |
+| `showLabels` | prefix `C` / `G` / `R` before values |
 
 **Color rule:** `value < normal` → 🟢 · `< warn` → 🟠 · `< high` → 🔴 · `≥ high` → 🟥
 After editing, pick **Reload config** from the menu.
@@ -77,7 +79,9 @@ After editing, pick **Reload config** from the menu.
 ## How it works
 
 - **CPU** - reads `PMU tdie` die-sensors directly through IOKit's private HID interface (the same source `powermetrics` uses), no root needed.
-- **GPU + power** - a background `macmon serve` process exposes these over a local HTTP endpoint; ThermalBar reads them on each refresh. If the helper isn't running, those metrics simply hide and CPU keeps working.
+- **GPU, power & RAM** - a background `macmon serve` process exposes these over a local HTTP endpoint; ThermalBar reads them on each refresh. If the helper isn't running, those metrics simply hide and CPU keeps working.
+
+> **Note on GPU temperature:** Apple Silicon does not expose a dedicated GPU temperature sensor - CPU and GPU share one die. ThermalBar reports the GPU figure from `macmon`'s averaged die readings, so it reflects the GPU region of the chip.
 
 ## Uninstall
 
@@ -109,3 +113,20 @@ ThermalBar is free and open source. If it earned a spot in your menu bar, a tip 
 <div align="center">
 <sub>Built for Apple Silicon. Star ⭐ if it's useful - it helps others find it.</sub>
 </div>
+
+---
+
+<details>
+<summary><sub>Keywords & related searches</sub></summary>
+
+<sub>
+
+ThermalBar is a free, open-source **Mac temperature monitor** and lightweight **macOS system monitor** that lives in the **menu bar**. If you searched for any of the following, this is the tool:
+
+**mac temperature monitor** · **cpu temperature mac** · **mac cpu temp** · **macbook temperature monitor** · **mac cpu temperature** · free mac temperature monitor · mac temperature monitor menu bar · monitor mac cpu gpu temperature · mac system monitor free · **istat menus alternative free** · mac temperature widget · mac overheating monitor · how to check cpu temperature on mac · mac menu bar cpu temp · lightweight mac temperature monitor · mac thermal monitor · mac die temperature · mac sensors temperature · mac stats temperature · hot mac temperature · **mac temp monitor github** · free mac cpu temp monitor · free menu bar temperature mac · free alternative to istat menus temperature · best free mac temperature monitor 2026 · mac ram usage menu bar · mac gpu temperature monitor · apple silicon temperature monitor · M1 M2 M3 M4 M5 temperature monitor · M4 Max temperature monitor · mac power draw monitor · mac wattage menu bar
+
+A free, native alternative to **iStat Menus**, **Stats**, **Fanny**, and **Hot** - focused on CPU & GPU temperature, RAM usage, and power, right in the menu bar.
+
+</sub>
+
+</details>
