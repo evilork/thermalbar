@@ -1,0 +1,3 @@
+Рекомендованные GitHub Topics (вставить в About репозитория):
+macos, menu-bar, apple-silicon, cpu-temperature, gpu-temperature, temperature-monitor,
+system-monitor, swift, m1, m2, m3, m4, hardware-monitoring, macos-app, menubar-app
