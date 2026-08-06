@@ -41,16 +41,24 @@ struct Config: Codable {
     }
 
     // CPU is read natively (always available). GPU/power/RAM come from the macmon
-    // HTTP helper; if it isn't running, those metrics simply hide.
+    // HTTP helper on Apple Silicon; on Intel from SMC + powermetrics daemon.
     // RAM is usage percent, so thresholds are higher (memory is often heavily used).
+    // Power defaults differ: Apple Silicon laptops idle at a few watts,
+    // Intel desktops (e.g. Xeon) idle at 40-60W and boost past 100W.
     static let defaultConfig = Config(
         cpuTemp: MetricConfig(enabled: true, thresholds: Thresholds(normal: 60, warn: 75, high: 90)),
         gpuTemp: MetricConfig(enabled: true, thresholds: Thresholds(normal: 60, warn: 75, high: 90)),
-        power:   MetricConfig(enabled: true, thresholds: Thresholds(normal: 30, warn: 55, high: 80)),
+        power: MetricConfig(enabled: true, thresholds: defaultPowerThresholds),
         ram:     MetricConfig(enabled: true, thresholds: Thresholds(normal: 70, warn: 85, high: 95)),
         intervalSeconds: 3,
         showLabels: true
     )
+
+    #if arch(arm64)
+    static let defaultPowerThresholds = Thresholds(normal: 30, warn: 55, high: 80)
+    #else
+    static let defaultPowerThresholds = Thresholds(normal: 60, warn: 90, high: 120)
+    #endif
 
     static var path: URL {
         let dir = FileManager.default.homeDirectoryForCurrentUser

@@ -11,6 +11,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
     private var item: NSStatusItem!
     private var config = Config.load()
     private var timer: Timer?
+    private var settingsWindow: SettingsWindowController?
 
     private var lastCPU: Double = .nan
     private var lastGPU: Double = .nan
@@ -24,6 +25,11 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         buildMenu()
         refresh()
         scheduleTimer()
+        if CommandLine.arguments.contains("-showsettings") {
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) { [weak self] in
+                self?.openSettings()
+            }
+        }
     }
 
     private func scheduleTimer() {
@@ -121,9 +127,9 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         menu.addItem(makeToggle("Labels (C/G/R)",  \.showLabels))
         menu.addItem(.separator())
 
-        let openItem = NSMenuItem(title: "Open config…", action: #selector(openConfig), keyEquivalent: "")
-        openItem.target = self
-        menu.addItem(openItem)
+        let settingsItem = NSMenuItem(title: "Settings…", action: #selector(openSettings), keyEquivalent: ",")
+        settingsItem.target = self
+        menu.addItem(settingsItem)
 
         let reloadItem = NSMenuItem(title: "Reload config", action: #selector(reloadConfig), keyEquivalent: "r")
         reloadItem.target = self
@@ -169,7 +175,22 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         refresh()
     }
 
-    @objc private func openConfig() { NSWorkspace.shared.open(Config.path) }
+    @objc private func openSettings() {
+        if settingsWindow == nil {
+            let wc = SettingsWindowController(config: config)
+            wc.onSave = { [weak self] newConfig in
+                guard let self = self else { return }
+                self.config = newConfig
+                self.config.save()
+                self.buildMenu()
+                self.scheduleTimer()
+                self.refresh()
+            }
+            wc.onClose = { [weak self] in self?.settingsWindow = nil }
+            settingsWindow = wc
+        }
+        settingsWindow?.present()
+    }
 
     @objc private func reloadConfig() {
         config = Config.load()

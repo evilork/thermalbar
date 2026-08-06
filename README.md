@@ -6,7 +6,7 @@
 
 ### macOS menu bar CPU & GPU temperature monitor - native, color-coded, lightweight, free.
 
-**A free Mac temperature monitor that lives in your menu bar.** Live CPU temperature, GPU temperature, RAM usage, and power draw - color-coded, no `sudo`, no Electron. Built for Apple Silicon (M1, M2, M3, M4, M4 Max, M5).
+**A free Mac temperature monitor that lives in your menu bar.** Live CPU temperature, GPU temperature, RAM usage, and power draw - color-coded, no `sudo`, no Electron. Works on Apple Silicon (M1-M5) **and Intel Macs (x86_64, including hackintosh)**.
 
 [![Platform](https://img.shields.io/badge/platform-macOS%2013%2B-blue)](https://www.apple.com/macos/)
 [![Apple Silicon](https://img.shields.io/badge/Apple%20Silicon-M1--M5-black?logo=apple)](https://support.apple.com/en-us/116943)
@@ -45,15 +45,17 @@ That's it. The installer builds the app, drops it in `/Applications`, and sets u
 
 ### Requirements
 
-- Apple Silicon Mac (M1-M5), macOS 13+
+- macOS 13+ on Apple Silicon (M1-M5) **or** Intel (x86_64)
 - [Xcode Command Line Tools](https://developer.apple.com/) - `xcode-select --install`
-- [Homebrew](https://brew.sh) *(optional, for GPU temp + power)* - the installer auto-installs [`macmon`](https://github.com/vladkens/macmon) if present
+- [Homebrew](https://brew.sh) *(optional, Apple Silicon only, for GPU temp + power)* - the installer auto-installs [`macmon`](https://github.com/vladkens/macmon) if present
 
-CPU temperature works out of the box. GPU temperature and power require `macmon` (handled automatically by the installer).
+CPU temperature works out of the box on both architectures. On Apple Silicon, GPU temperature and power require `macmon` (handled automatically by the installer). On Intel, CPU/GPU temps are read via SMC keys and RAM usage natively - no helper needed; power draw is unavailable without root and stays hidden.
+
+> **Hackintosh note:** SMC reading works through VirtualSMC/FakeSMC. For CPU temperature you need [`SMCProcessor.kext`](https://github.com/acidanthera/VirtualSMC); for AMD GPU temperature, `SMCRadeonGPU.kext`. Without those kexts the corresponding metrics simply hide.
 
 ## Configuration
 
-Click the menu bar item to toggle metrics on/off, or edit `~/.config/thermalbar/config.json`:
+Click the menu bar item → **Settings…** (⌘,) to open the settings panel: toggle metrics, adjust color thresholds, refresh interval and labels. Changes save to `~/.config/thermalbar/config.json` and apply instantly. You can still edit the JSON by hand:
 
 ```jsonc
 {
@@ -78,10 +80,18 @@ After editing, pick **Reload config** from the menu.
 
 ## How it works
 
+**Apple Silicon:**
+
 - **CPU** - reads `PMU tdie` die-sensors directly through IOKit's private HID interface (the same source `powermetrics` uses), no root needed.
 - **GPU, power & RAM** - a background `macmon serve` process exposes these over a local HTTP endpoint; ThermalBar reads them on each refresh. If the helper isn't running, those metrics simply hide and CPU keeps working.
 
 > **Note on GPU temperature:** Apple Silicon does not expose a dedicated GPU temperature sensor - CPU and GPU share one die. ThermalBar reports the GPU figure from `macmon`'s averaged die readings, so it reflects the GPU region of the chip.
+
+**Intel (x86_64):**
+
+- **CPU & GPU** - reads SMC temperature keys (`TCXC`/`TC0P`/`TC0D`/per-core `TC*C` for CPU, `TG0D`/`TG0P`/… for GPU) through the `AppleSMC` IOKit user client - the same interface iStat Menus and smcFanControl use, no root needed. Works on hackintoshes via VirtualSMC.
+- **RAM** - computed natively from Mach VM statistics (`host_statistics64`), no helper process.
+- **Power** - not available on Intel without root, so the metric stays hidden there.
 
 ## Uninstall
 

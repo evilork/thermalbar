@@ -1,7 +1,11 @@
 // Sources/Sensors.m - native HID temperature sensor reading via private IOKit API.
 // Works without sudo on Apple Silicon (M1-M5). No ARC required.
+// On Intel (x86_64) the HID path is compiled out (no sensor services exist there);
+// CPU/GPU temperatures are read via SMC instead (see SMC.m).
 #import "Sensors.h"
 #import <Foundation/Foundation.h>
+
+#if defined(__arm64__)
 
 // --- Private IOKit HID declarations (not in public headers) ---
 typedef struct __IOHIDEventSystemClient *IOHIDEventSystemClientRef;
@@ -73,3 +77,11 @@ NSDictionary<NSString *, NSNumber *> * readTemperatureSensors(void) {
     CFRelease(client);
     return result.count > 0 ? result : nil;
 }
+
+#else // !__arm64__ (Intel): no HID temperature services, use SMC.m instead.
+
+NSDictionary<NSString *, NSNumber *> * readTemperatureSensors(void) {
+    return nil;
+}
+
+#endif // __arm64__
