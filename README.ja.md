@@ -62,6 +62,12 @@ ThermalBarは、1分ごとの履歴をMac上に90日間保存します。今日�
 2. 解凍して、**ThermalBar.app** を「アプリケーション」フォルダにドラッグします。
 3. 開きます。アプリはAppleによる署名と公証を受けているので、警告なしで開きます。
 
+[Homebrew](https://brew.sh) でもインストールできます：
+
+```sh
+brew install --cask evilork/tap/thermalbar
+```
+
 ThermalBarは初期設定でログイン時に開きます。オフにするには **設定 → 一般（Settings → General）** を開いてください。
 
 **1.0からアップグレードする場合は？** 古いアプリを終了して、新しいものに置き換えてください。バージョン2.0は、古い`macmon`ヘルパーを自動でオフにします。`macmon`自体はインストールされたままです。ほかに使うものがなければ、`brew uninstall macmon`で削除できます。

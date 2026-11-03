@@ -62,6 +62,12 @@ Menü çubuğunun neyi göstereceğini, tek satır mı iki satır mı olacağın
 2. Arşivi açın ve **ThermalBar.app**'i **Uygulamalar**'a sürükleyin.
 3. Açın. Uygulama Apple tarafından imzalanmış ve noter onaylıdır; bu yüzden uyarı vermeden açılır.
 
+Ya da [Homebrew](https://brew.sh) ile kurun:
+
+```sh
+brew install --cask evilork/tap/thermalbar
+```
+
 ThermalBar varsayılan olarak oturum açıldığında başlar; bunu **Ayarlar → Genel (Settings → General)** bölümünden kapatabilirsiniz.
 
 **1.0'dan mı geçiyorsunuz?** Eski uygulamadan çıkın ve yenisiyle değiştirin. 2.0 sürümü eski `macmon` yardımcısını kendiliğinden kapatır. `macmon` kurulu kalır; başka bir şey kullanmıyorsa `brew uninstall macmon` ile kaldırabilirsiniz.

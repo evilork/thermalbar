@@ -62,6 +62,12 @@ ThermalBar 在你的 Mac 上按分钟保存 90 天的历史记录。选择今天
 2. 解压后，把 **ThermalBar.app** 拖到“应用程序”文件夹。
 3. 打开它。应用已由 Apple 签名并公证，打开时不会有任何警告。
 
+也可以用 [Homebrew](https://brew.sh) 安装：
+
+```sh
+brew install --cask evilork/tap/thermalbar
+```
+
 ThermalBar 默认开机登录时自动打开；可在 **设置 → 通用（Settings → General）** 中关闭。
 
 **从 1.0 升级？** 退出旧版应用，用新版替换即可。2.0 版本会自动停用旧的 `macmon` 辅助程序。`macmon` 仍保留在系统中；如果没有其他程序在用，可以用 `brew uninstall macmon` 删除。

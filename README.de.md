@@ -62,6 +62,12 @@ Wähle, was die Menüleiste zeigt, eine Zeile oder zwei, Beschriftungen und Farb
 2. Entpacke die Datei und ziehe **ThermalBar.app** in den Ordner **Programme**.
 3. Öffne die App. Sie ist von Apple signiert und notarisiert und öffnet sich daher ohne Warnungen.
 
+Oder installiere sie mit [Homebrew](https://brew.sh):
+
+```sh
+brew install --cask evilork/tap/thermalbar
+```
+
 ThermalBar startet standardmäßig beim Anmelden; das schaltest du unter **Einstellungen → Allgemein (Settings → General)** aus.
 
 **Update von 1.0?** Beende die alte App und ersetze sie durch die neue. Version 2.0 schaltet den alten `macmon`-Helfer von selbst ab. `macmon` bleibt installiert; entferne es mit `brew uninstall macmon`, wenn nichts anderes es nutzt.

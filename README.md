@@ -62,6 +62,12 @@ Choose what the menu bar shows, one line or two, labels and colors. Thresholds s
 2. Unzip it and drag **ThermalBar.app** to **Applications**.
 3. Open it. The app is signed and notarized by Apple, so it opens without warnings.
 
+Or install it with [Homebrew](https://brew.sh):
+
+```sh
+brew install --cask evilork/tap/thermalbar
+```
+
 ThermalBar opens at login by default; switch that off in **Settings → General**.
 
 **Upgrading from 1.0?** Quit the old app and replace it with the new one. Version 2.0 turns off the old `macmon` helper by itself. `macmon` stays installed; remove it with `brew uninstall macmon` if nothing else uses it.

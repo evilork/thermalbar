@@ -62,6 +62,12 @@ Elige qué muestra la barra de menús, una línea o dos, etiquetas y colores. Lo
 2. Descomprímelo y arrastra **ThermalBar.app** a **Aplicaciones**.
 3. Ábrela. La app está firmada y notarizada por Apple, así que se abre sin avisos.
 
+O instálala con [Homebrew](https://brew.sh):
+
+```sh
+brew install --cask evilork/tap/thermalbar
+```
+
 ThermalBar se abre al iniciar sesión de forma predeterminada; desactívalo en **Ajustes → General (Settings → General)**.
 
 **¿Actualizas desde la 1.0?** Cierra la app antigua y sustitúyela por la nueva. La versión 2.0 desactiva sola el antiguo ayudante `macmon`. `macmon` sigue instalado; elimínalo con `brew uninstall macmon` si nada más lo usa.

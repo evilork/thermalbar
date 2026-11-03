@@ -62,6 +62,12 @@ ThermalBar는 Mac에 1분 단위 기록을 90일 동안 보관합니다. 오늘,
 2. 압축을 풀고 **ThermalBar.app** 을 **응용 프로그램** 폴더로 드래그합니다.
 3. 엽니다. 앱은 Apple의 서명과 공증을 받았으므로 경고 없이 열립니다.
 
+[Homebrew](https://brew.sh)로도 설치할 수 있습니다:
+
+```sh
+brew install --cask evilork/tap/thermalbar
+```
+
 ThermalBar는 기본적으로 로그인할 때 열립니다. 끄려면 **설정 → 일반(Settings → General)** 에서 해제하세요.
 
 **1.0에서 업그레이드하나요?** 이전 앱을 종료하고 새 앱으로 교체하세요. 2.0 버전은 예전 `macmon` 도우미를 알아서 끕니다. `macmon`은 설치된 채로 남아 있으며, 다른 곳에서 쓰지 않는다면 `brew uninstall macmon`으로 지울 수 있습니다.
