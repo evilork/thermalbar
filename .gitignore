@@ -2,3 +2,4 @@ build/
 *.o
 *.swiftmodule
 .DS_Store
+*.iconset/

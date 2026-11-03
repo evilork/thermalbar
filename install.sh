@@ -1,132 +1,84 @@
 #!/bin/bash
-# install.sh — one-command installer for ThermalBar.
-# Builds the app, installs to /Applications, sets up auto-start, and (optionally)
-# starts a background macmon server for GPU temperature and power readings.
+# install.sh - builds ThermalBar from source, installs it to /Applications and opens it at login.
+# v2 reads every sensor natively: no Homebrew, no macmon, no sudo.
 set -euo pipefail
 
+cd "$(dirname "$0")"
+
 APP="ThermalBar"
-BUNDLE_ID_APP="com.evilork.thermalbar"
-BUNDLE_ID_MACMON="com.evilork.macmon"
-PORT=9090
-LA="$HOME/Library/LaunchAgents"
-APP_DST="/Applications/$APP.app"
+LABEL="com.evilork.thermalbar"
+LEGACY_LABEL="com.evilork.macmon"
+APP_DST="/Applications/${APP}.app"
+LA="${HOME}/Library/LaunchAgents"
+UID_NUM="$(id -u)"
 
-cyan()  { printf "\033[36m%s\033[0m\n" "$1"; }
-green() { printf "\033[32m%s\033[0m\n" "$1"; }
-yellow(){ printf "\033[33m%s\033[0m\n" "$1"; }
+step() { printf '\033[36m==> %s\033[0m\n' "$1"; }
+ok()   { printf '\033[32m%s\033[0m\n' "$1"; }
+note() { printf '\033[33m%s\033[0m\n' "$1"; }
+fail() { printf '\033[31merror: %s\033[0m\n' "$1" >&2; exit 1; }
 
-cyan "ThermalBar installer"
-echo
+# 1. Requirements
+[ "$(uname -m)" = "arm64" ] || fail "ThermalBar needs an Apple Silicon Mac (M1 or newer)."
+command -v swiftc >/dev/null 2>&1 || fail "Xcode Command Line Tools are required. Run: xcode-select --install"
 
-# 1. Toolchain check
-if ! command -v swiftc >/dev/null; then
-  yellow "Xcode Command Line Tools required. Run: xcode-select --install"
-  exit 1
-fi
+# 2. Build (also runs the signature and minimum-macOS checks)
+step "Building ${APP}"
+./build.sh build
 
-# 2. macmon (optional — needed only for GPU temp + power)
-MACMON="$(command -v macmon || true)"
-if [ -z "$MACMON" ]; then
-  if command -v brew >/dev/null; then
-    yellow "macmon not found — installing via Homebrew (enables GPU temp + power)..."
-    brew install macmon || yellow "macmon install failed; CPU temp will still work."
-    MACMON="$(command -v macmon || true)"
-  else
-    yellow "macmon not found and Homebrew unavailable. CPU temp works; GPU/W disabled."
+# 3. Quit a running copy
+if pgrep -x "${APP}" >/dev/null 2>&1; then
+  step "Quitting the running ${APP}"
+  osascript -e "quit app \"${APP}\"" >/dev/null 2>&1 || true
+  for _ in 1 2 3 4 5; do
+    pgrep -x "${APP}" >/dev/null 2>&1 || break
+    sleep 1
+  done
+  if pgrep -x "${APP}" >/dev/null 2>&1; then
+    pkill -x "${APP}" || true
+    sleep 1
   fi
 fi
 
-# 3. Build
-cyan "Building $APP..."
-rm -rf build
-mkdir -p "build/$APP.app/Contents/MacOS"
-swiftc -O \
-  -import-objc-header Sources/ThermalBar-Bridging-Header.h \
-  Sources/Sensors.m \
-  Sources/main.swift Sources/Config.swift Sources/Sampler.swift Sources/StatusController.swift \
-  -framework Cocoa -framework IOKit \
-  -o "build/$APP.app/Contents/MacOS/$APP"
+# 4. Install
+step "Installing to /Applications"
+rm -rf "${APP_DST}"
+ditto "build/${APP}.app" "${APP_DST}" || fail "cannot copy the app to /Applications"
 
-cat > "build/$APP.app/Contents/Info.plist" << 'PLIST'
-<?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
-<plist version="1.0">
-<dict>
-  <key>CFBundleName</key><string>ThermalBar</string>
-  <key>CFBundleDisplayName</key><string>ThermalBar</string>
-  <key>CFBundleIdentifier</key><string>com.evilork.thermalbar</string>
-  <key>CFBundleVersion</key><string>1.0</string>
-  <key>CFBundleShortVersionString</key><string>1.0</string>
-  <key>CFBundlePackageType</key><string>APPL</string>
-  <key>CFBundleExecutable</key><string>ThermalBar</string>
-  <key>LSMinimumSystemVersion</key><string>13.0</string>
-  <key>LSUIElement</key><true/>
-</dict>
-</plist>
-PLIST
-
-# 4. Install to /Applications
-cyan "Installing to /Applications..."
-rm -rf "$APP_DST"
-cp -R "build/$APP.app" /Applications/
-
-# 5. Stop any running instances
-launchctl bootout "gui/$(id -u)/$BUNDLE_ID_APP" 2>/dev/null || true
-launchctl bootout "gui/$(id -u)/$BUNDLE_ID_MACMON" 2>/dev/null || true
-pkill -9 -f "$APP.app/Contents/MacOS" 2>/dev/null || true
-pkill -9 -f "macmon serve" 2>/dev/null || true
-sleep 1
-
-mkdir -p "$LA"
-
-# 6. macmon serve agent (GPU temp + power)
-if [ -n "$MACMON" ]; then
-cat > "$LA/$BUNDLE_ID_MACMON.plist" << PL
-<?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
-<plist version="1.0">
-<dict>
-  <key>Label</key><string>$BUNDLE_ID_MACMON</string>
-  <key>ProgramArguments</key>
-  <array>
-    <string>$MACMON</string><string>serve</string>
-    <string>-p</string><string>$PORT</string>
-    <string>-i</string><string>1000</string>
-  </array>
-  <key>RunAtLoad</key><true/>
-  <key>KeepAlive</key><true/>
-  <key>ThrottleInterval</key><integer>10</integer>
-  <key>ProcessType</key><string>Background</string>
-</dict>
-</plist>
-PL
-launchctl bootstrap "gui/$(id -u)" "$LA/$BUNDLE_ID_MACMON.plist"
-green "macmon server running on port $PORT (GPU temp + power)."
+# 5. Remove the v1 helper agent (v2 does not need macmon)
+if [ -f "${LA}/${LEGACY_LABEL}.plist" ] || launchctl print "gui/${UID_NUM}/${LEGACY_LABEL}" >/dev/null 2>&1; then
+  step "Removing the v1 helper agent ${LEGACY_LABEL}"
+  launchctl bootout "gui/${UID_NUM}/${LEGACY_LABEL}" >/dev/null 2>&1 || true
+  rm -f "${LA}/${LEGACY_LABEL}.plist"
+  note "The macmon program itself was left installed; remove it with 'brew uninstall macmon' if nothing else uses it."
 fi
 
-# 7. ThermalBar UI agent (delayed start so macmon is ready first)
-cat > "$LA/$BUNDLE_ID_APP.plist" << PL
+# 6. Open at login (the same file the app's "Open at login" switch manages)
+step "Setting up open at login"
+mkdir -p "${LA}"
+launchctl bootout "gui/${UID_NUM}/${LABEL}" >/dev/null 2>&1 || true
+cat > "${LA}/${LABEL}.plist" <<PL
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
-  <key>Label</key><string>$BUNDLE_ID_APP</string>
+  <key>Label</key><string>${LABEL}</string>
   <key>ProgramArguments</key>
   <array>
-    <string>/bin/sh</string><string>-c</string>
-    <string>sleep 5; exec /usr/bin/open -a "$APP_DST"</string>
+    <string>/usr/bin/open</string>
+    <string>-a</string>
+    <string>${APP_DST}</string>
   </array>
   <key>RunAtLoad</key><true/>
   <key>LimitLoadToSessionType</key><string>Aqua</string>
-  <key>ThrottleInterval</key><integer>10</integer>
+  <key>ProcessType</key><string>Interactive</string>
 </dict>
 </plist>
 PL
-launchctl bootstrap "gui/$(id -u)" "$LA/$BUNDLE_ID_APP.plist"
+plutil -lint -s "${LA}/${LABEL}.plist" || fail "the launch agent plist is not valid"
 
-# 8. Launch now
-open "$APP_DST"
+# 7. Open now
+open "${APP_DST}" || fail "cannot open ${APP_DST}"
 echo
-green "Done. ThermalBar is now in your menu bar and will auto-start on login."
-echo "Configure via the menu bar icon, or edit ~/.config/thermalbar/config.json"
+ok "Done. ThermalBar is in your menu bar and opens at login."
+echo "Click it for the panel; Settings are at the bottom of the panel."
 echo "Uninstall anytime: ./uninstall.sh"
