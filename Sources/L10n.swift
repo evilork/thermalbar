@@ -32,7 +32,7 @@ enum K: CaseIterable {
     // Hints
     case hintGPUStuck, hintThrottle, hintMemory, hintMemoryNoApp
     // Top apps
-    case topApps, byCPU, byMemory, noData, webPages
+    case topApps, byCPU, byMemory, noData, webPages, androidEmulator
     // Games
     case lastGame, noGameYet, gameNow, gameStats, gameThrottled, gameNoThrottle, gameGPUStuck
     // Footer
@@ -114,6 +114,7 @@ struct Strings: Equatable {
         case .byMemory: return ru ? "Память" : "Memory"
         case .noData: return ru ? "Нет данных" : "No data"
         case .webPages: return ru ? "Веб-страницы" : "Web pages"
+        case .androidEmulator: return ru ? "Эмулятор Android" : "Android Emulator"
 
         case .lastGame: return ru ? "Последняя игра" : "Last game"
         case .noGameYet:

@@ -241,18 +241,22 @@ final class AppModel: ObservableObject {
         }
     }
 
-    /// Friendlier names for system processes that have no app bundle.
+    /// ps counts one core as 100%; the panel shows a share of the whole processor instead.
+    private let coreCount = Double(max(ProcessInfo.processInfo.activeProcessorCount, 1))
+
+    /// Friendlier names for processes without an app bundle, CPU as a share of all cores.
     private func readable(_ app: AppUsage) -> AppUsage {
-        let name: String
+        var name = app.name
         if app.name == "com.apple.WebKit.WebContent" {
             name = strings.t(.webPages)  // Safari and every app that shows web pages
+        } else if app.id.contains("/Android/sdk/emulator/") {
+            name = strings.t(.androidEmulator)
         } else if app.name.hasPrefix("com.apple.DriverKit-"), app.name.count > 20 {
             name = String(app.name.dropFirst(20))
-        } else {
-            return app
         }
+        let share = min(max(app.cpuPercent / coreCount, 0), 100)
         return AppUsage(id: app.id, name: name, appPath: app.appPath,
-                        cpuPercent: app.cpuPercent, memoryBytes: app.memoryBytes)
+                        cpuPercent: share, memoryBytes: app.memoryBytes)
     }
 
     private static func isSystemApp(_ app: AppUsage) -> Bool {
