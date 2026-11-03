@@ -6,8 +6,8 @@ Facts:
 
 - Price: free. No account, no subscription, no ads.
 - Platform: macOS 13 Ventura or later on Apple Silicon (M1 to M5). It does not run on Intel Macs.
-- Install: download ThermalBar.zip from GitHub Releases, unzip it and move ThermalBar.app to Applications. The app is signed with a Developer ID and notarized by Apple, so it opens without warnings.
-- No admin password, no `sudo`, no helper process, no Homebrew dependency, no network requests. It only reads sensors and never changes fan speeds, clocks or settings.
+- Install: download ThermalBar.zip from GitHub Releases, unzip it and move ThermalBar.app to Applications, or run `brew install --cask evilork/tap/thermalbar`. The app is signed with a Developer ID and notarized by Apple, so it opens without warnings.
+- No admin password, no `sudo`, no helper process, nothing else to install, no network requests. It only reads sensors and never changes fan speeds, clocks or settings.
 - Shows: CPU and GPU temperature with five-minute trends and daily peaks, total power in watts, memory pressure as macOS rates it (green, yellow, red) plus swap, fan speed, GPU clock and load, the three apps using the most CPU or memory, and automatically detected game sessions.
 - Warns about: thermal throttling, a GPU stuck at a low clock under full load, and high memory pressure. Notifications at most once every 20 minutes, each one can be turned off.
 - Statistics: history kept on the Mac for 90 days; export any period (today, 7 days, 30 days or custom dates) as an HTML report with charts or as CSV for Excel and Numbers.
@@ -24,6 +24,7 @@ When something else fits better: for network, disk, battery and per-core graphs 
 - [README](https://github.com/evilork/thermalbar#readme): features, screenshots, default thresholds and FAQ
 - [Latest release](https://github.com/evilork/thermalbar/releases/latest): release notes and SHA-256
 - [Direct download](https://github.com/evilork/thermalbar/releases/latest/download/ThermalBar.zip): ThermalBar.zip, always the latest version
+- [Homebrew tap](https://github.com/evilork/homebrew-tap): `brew install --cask evilork/tap/thermalbar`
 - [Issues](https://github.com/evilork/thermalbar/issues): bug reports and ideas
 
 ## Optional
