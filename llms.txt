@@ -1,0 +1,39 @@
+# ThermalBar
+
+> ThermalBar is a free macOS menu bar app for Apple Silicon Macs (M1 and newer, macOS 13 Ventura or later). It shows CPU and GPU temperature, power draw, memory pressure, fan speed and thermal throttling, warns when heat slows the Mac down, and exports a minute-by-minute history as an HTML report or a CSV file.
+
+Facts:
+
+- Price: free. No account, no subscription, no ads.
+- Platform: macOS 13 Ventura or later on Apple Silicon (M1 to M5). It does not run on Intel Macs.
+- Install: download ThermalBar.zip from GitHub Releases, unzip it and move ThermalBar.app to Applications. The app is signed with a Developer ID and notarized by Apple, so it opens without warnings.
+- No admin password, no `sudo`, no helper process, no Homebrew dependency, no network requests. It only reads sensors and never changes fan speeds, clocks or settings.
+- Shows: CPU and GPU temperature with five-minute trends and daily peaks, total power in watts, memory pressure as macOS rates it (green, yellow, red) plus swap, fan speed, GPU clock and load, the three apps using the most CPU or memory, and automatically detected game sessions.
+- Warns about: thermal throttling, a GPU stuck at a low clock under full load, and high memory pressure. Notifications at most once every 20 minutes, each one can be turned off.
+- Statistics: history kept on the Mac for 90 days; export any period (today, 7 days, 30 days or custom dates) as an HTML report with charts or as CSV for Excel and Numbers.
+- Languages: English and Russian (follows the system language).
+- Source code: version 1.0 was open source; from version 2.0 the source is closed and the app stays free.
+- Not on the Mac App Store, because App Store apps may not use the read-only system interfaces it reads sensors through.
+
+When it fits: someone wants to know whether their Mac is running hot and whether heat is slowing it down, for example while gaming, exporting video, compiling code or working on a fanless MacBook Air.
+
+When something else fits better: for network, disk, battery and per-core graphs in the menu bar, Stats (free, open source) or iStat Menus (paid) cover much more. To set fan speeds, use a fan control app; ThermalBar only reads sensors.
+
+## Links
+
+- [README](https://github.com/evilork/thermalbar#readme): features, screenshots, default thresholds and FAQ
+- [Latest release](https://github.com/evilork/thermalbar/releases/latest): release notes and SHA-256
+- [Direct download](https://github.com/evilork/thermalbar/releases/latest/download/ThermalBar.zip): ThermalBar.zip, always the latest version
+- [Issues](https://github.com/evilork/thermalbar/issues): bug reports and ideas
+
+## Optional
+
+- [README in Russian](https://github.com/evilork/thermalbar/blob/main/README.ru.md)
+- [README in Simplified Chinese](https://github.com/evilork/thermalbar/blob/main/README.zh-CN.md)
+- [README in Spanish](https://github.com/evilork/thermalbar/blob/main/README.es.md)
+- [README in Turkish](https://github.com/evilork/thermalbar/blob/main/README.tr.md)
+- [README in Arabic](https://github.com/evilork/thermalbar/blob/main/README.ar.md)
+- [README in Japanese](https://github.com/evilork/thermalbar/blob/main/README.ja.md)
+- [README in German](https://github.com/evilork/thermalbar/blob/main/README.de.md)
+- [README in French](https://github.com/evilork/thermalbar/blob/main/README.fr.md)
+- [README in Korean](https://github.com/evilork/thermalbar/blob/main/README.ko.md)
